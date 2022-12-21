@@ -1,0 +1,846 @@
+#include<iostream>
+#include<fstream>
+#include<string>
+#include<cstring>
+using namespace std;
+string usd,psd;
+ifstream fi,usi;
+ofstream fo,uso;
+fstream new_file;
+int no_of_membership_users=0;
+int no_of_trainers=0;
+string defusn="zeus1983",defpsd="srm123"; //the default login credentials for admin...
+
+class admin{
+    public:
+    void options();
+    void add();
+    void update();
+    void update_membership(string,string);
+    int paymentoptions(int,string);
+    void delete_membership();
+    int delete_s(string,string);
+    void records();
+    void read(string);
+};
+void admin::read(string fname){
+string input;
+fi.close();
+fi.open(fname);
+while(!fi.eof()){
+    getline(fi,input);
+    cout<<endl<<input;
+}
+fi.close();
+}
+void admin::records(){
+int n;
+admin a;
+cout<<"\nWelcome to Records section...";
+cout<<"\nWhat would you like to look through";
+cout<<"\n1.Users\n2.Silver Memberships\n3.Gold Memberships\n4.Platinum Membership";
+cout<<"Enter your choice;";
+cin>>n;
+do{
+if(n==1){
+        cout<<"ALL USER:";
+ a.read("ALLUSERS");
+}
+else if(n==2){
+        cout<<"SILVER MEMBERSHIP:";
+    a.read("Silver.txt");
+}
+else if(n==3){
+    cout<<"GOLD MEMBERSHIP";
+    a.read("Gold.txt");
+}
+else if(n==4){
+    cout<<"PLATINUM MEMBERSHIP:";
+    a.read("Platinum.txt");
+}
+else{
+    cout<<"Please, choose a valid option";
+}
+}while(n!=1&&n!=2&&n!=3&&n!=4);
+}
+
+void admin::delete_membership()
+{
+admin a;
+string usm,fname;
+cout<<"\nEnter the username:";
+cin>>usm;
+cout<<"\nEnter the membership linked to it\nex:Silver.txt";
+cin>>fname;
+int w;
+w=a.delete_s(usm,fname);
+if(w!=0){
+cout<<"\nThe Membership has been deleted successfully ";
+}
+
+else{
+    cout<<"\nThe Membershipship Deletion is Unsuccessful";
+}
+}
+void admin::options()
+{
+    admin a;
+    int ch;
+        cout<<"Greeting Admin!!!\nChoose an option:";
+    do{
+        cout<<"\n1.Add a membership\n2.Update a membership\n3.Delete membership\n4.Check records";
+        cout<<"\nEnter your choice;";
+        cin>>ch;
+    switch(ch){
+        case 1:
+            {
+            a.add();
+            break;
+            }
+        case 2:
+            {
+            a.update();
+            break;
+            }
+        case 3:
+            {
+            a.delete_membership();
+            break;
+            }
+        case 4:
+            {
+            a.records();
+            break;
+            }
+        default:
+            cout<<"Please select a valid option!!!";
+    }
+}while(1);
+}
+
+int admin::paymentoptions(int ch,string usm)
+{
+int n;
+int amt,amt1;
+string fname=usm+"USER.txt";
+if(ch==1){
+    amt=2000;
+}
+else if(ch==2){
+    amt=3500;
+}
+else if(ch==3){
+    amt=5000;
+}
+string bkname,ifsc;
+    cout<<"\nHow would you like to pay:\n1.UPI Transaction\n2.online banking";
+    cin>>n;
+    if(n==1){
+        cout<<"UPI NUMBER: XXXXXXXXXX";
+        cout<<"\nEnter your Amount to be paid:";
+        cin>>amt1;
+        if(amt==amt1){
+        cout<<"\nPayment Successfull";
+        return 1;
+        }
+        else{
+            cout<<"\nPAYMENT UNSUCCESSFULL!!!\nThere seems to be a problem with the payment..Try again";
+            return 0;
+        }
+    }
+    else if(n==2){
+        cout<<"\nOnline banking details:";
+        cout<<"A/c:APXXXXXXXX";
+        cout<<"\nAmount to be paid:"<<amt;
+        cout<<"\nEnter your bank name in all uppercase:";
+        cin>>bkname;
+        cout<<"\nEnter your bank IFSC code:";
+        cin>>ifsc;
+        cout<<"\nEnter your Amount to be paid:";
+        cin>>amt1;
+        if(bkname[0]==ifsc[0] && bkname[1]==ifsc[1] && bkname[2]==ifsc[2] && amt==amt1){
+        return 1;
+        }
+        else{
+            cout<<"\nPAYMENT UNSUCCESSFULL!!!\nThere seems to be a problem with the payment..Try again";
+            return 0;
+        }
+    }
+    else{
+        cout<<"Please choose a valid option";
+    }
+    fo.close();
+        fo.open("Transactiondetails.txt",ios::app);
+        fo<<usm<<"\t"<<"Transaction details:\t"<<"Bank name:"<<bkname<<"\tIFSC Code:"<<ifsc;
+        fo.close();
+
+}
+
+void admin::update_membership(string key,string fname)
+{
+    string input;
+    char l[6]="temp1";
+
+    fi.close();
+    fi.open(fname);
+    new_file.open(l,ios::app);
+
+    if(fi)
+    {
+        while(!fi.eof()){
+        getline(fi,input);
+        if(input.empty())
+        {
+            continue;
+
+        }
+        if(input.find(key)==string::npos){
+            new_file<<input<<endl;
+        }
+        else{
+            continue;
+        }
+        }
+        fi.close();
+        new_file.close();
+
+        char l1[fname.length()+1];
+        strcpy(l1,fname.c_str());
+
+        remove(l1);
+
+        rename(l,l1);
+    }
+}
+
+int admin::delete_s(string key,string fname)
+{
+    string input;
+    char l[6]="temp1";
+    int w=0;
+    fi.close();
+    fi.open(fname);
+    new_file.open(l,ios::app);
+
+    if(fi)
+    {
+        while(!fi.eof()){
+        getline(fi,input);
+        if(input.empty())
+        {
+            continue;
+
+        }
+        if(input.find(key)==string::npos){
+            new_file<<input<<endl;
+        }
+        else{
+            continue;
+        }
+        }
+        fi.close();
+        new_file.close();
+
+        char l1[fname.length()+1];
+        strcpy(l1,fname.c_str());
+
+        remove(l1);
+
+        rename(l,l1);
+    }
+    return w;
+}
+
+void admin::update()
+{
+string usm;
+string ch1,ch2;
+admin a;
+cout<<"Enter your Username:";
+cin>>usm;
+fi.close();
+string temp=usm+"USER.txt";
+fi.open(temp.c_str());
+    if(!fi.is_open() && fi.fail()){
+        cout<<"You are not registered, \n Please register before logging in.\nRedirecting to register portal...";
+        fi.close();
+        }
+    else{
+        cout<<"\nEnter your previous membership:";
+        cout<<"\n1.Silver\n2.Gold\n3.Platinum\nEnter as string ex:Silver.txt";
+        cin>>ch1;
+        cout<<"\nWhich membership would you like to shift";
+        cout<<"\n1.Silver\n2.Gold\n3.Platinum";
+        cin>>ch2;
+        a.update_membership(usm,ch1);
+        //Appending the username into the file
+        fo.close();
+        fo.open(ch2,ios::app);
+        fo<<usm;
+        fo.close();
+
+    }
+}
+
+void admin::add()
+{
+admin a;
+string usm;
+int ch,w;
+cout<<"Enter your Username:";
+cin>>usm;
+fi.close();
+string temp=usm+"USER.txt";
+fi.open(temp.c_str());
+    if(!fi.is_open() && fi.fail()){
+        cout<<"You are not registered, \n Please register before logging in.\nRedirecting to register portal...";
+        fi.close();
+        }
+    else{
+     cout<<"Our membership packages:";
+     cout<<"\n1.Silver-2hrs a day,Pt,limited access to gym equipment,No flexibility\n2.Gold-4hrs a day,PT,full access to gym equipment,Flexibility in timing\n3.Platinum-unlimited acces,PT,full acces,flexibility of timig and the trainers";
+     cin>>ch;
+     w=a.paymentoptions(ch,usm);
+     if(w==1){
+            cout<<"Payment is successfull..You name is being added";
+
+     if(ch==1){
+            fo.close();
+            fo.open("Silver.txt",ios::app);
+            fo<<usm;
+            fo.close();
+            //Appending Membership details into user file...
+            uso.open(temp,ios::app);
+            fo<<"Membership detail : Silver Membership";
+            fo.close();
+     }
+     else if(ch==2){
+            fo.close();
+            fo.open("Gold.txt",ios::app);
+            fo<<usm;
+            fo.close();
+            //Appending Membership details into user file...
+            uso.open(temp,ios::app);
+            uso<<"Membership detail : Gold Membership";
+            uso.close();
+     }
+     else if(ch==3){
+        fo.close();
+            fo.open("Platinum.txt",ios::app);
+            fo<<usm;
+            fo.close();
+            //Appending Membership details into user file...
+            uso.open(temp,ios::app);
+            uso<<"Membership detail : Platinum Membership";
+            uso.close();
+     }
+     else{
+        cout<<"Choose a valid option";
+     }
+     }
+     no_of_membership_users++;
+    }
+}
+////////////////////////VALIDMAID
+
+int validmail(string email)
+{
+    if (email.length() > 13) // ! @srmap.edu.in - length is 13
+    {
+        int n = email.find('@');
+        if (n != 0)
+        {
+            int _ = 0;
+            for (int i = 0; i < n; i++)
+            {
+                if (email[i] < 'a' || email[i] > 'z')
+                {
+                    if (email[i] == '_' && _ != 1)
+                        _ += 1; // ! only one '_' is allowed
+                    else
+                        return 0;
+                }
+            }
+            if (email.substr(n + 1) == "srmap.edu.in")
+                return 1;
+            return 0;
+        }
+        else
+            return 0;
+    }
+    else
+        return 0;
+}
+//USER
+//##########################USER
+
+class user
+{
+public:
+    void getdetails(string ,string ,string);
+    void options(string  ,int);
+    void edit(string );
+    int quit(string );
+    void update_file(string,string,string);
+    void display(string);
+};
+void user::display(string fname)
+{
+string input;
+cout<<"Your profile reads:..."<<fname;
+fi.close();
+fi.open(fname);
+        while(!fi.eof()){
+        getline(fi,input);
+        cout<<endl<<input;
+        }
+}
+
+void user::getdetails(string usm,string psm,string name)
+{
+user u;
+string email,phn_no,temp=usm+"USER.txt";
+float height,weight;
+int age;
+
+    while(1){
+    cout<<"Enter your email:[use @srmap.edu.in format]";
+    cin>>email;
+    cout<<"Enter your phone number:";
+    cin>>phn_no;
+    int n=validmail(email);
+    if(n==1 && phn_no.length()==10){
+        break;
+    }
+    else{
+        cout<<"The email you have entered is invalid\n Please enter your email and Phone number again...";
+    }
+    }
+    cout<<"Physical Status:\nEnter your Age:";
+    cin>>age;
+    cout<<"Enter your Weight:";
+    cin>>weight;
+    cout<<"Enter your Height:";
+    cin>>height;
+    fo.open(temp);
+    fo<<usm<<endl<<psm<<endl<<"Name:"<<name<<endl;
+    fo<<"Details:"<<endl;
+    fo<<"Email:"<<email<<endl<<"Phone number:"<<phn_no<<endl;
+    fo<<"Physical status:\n"<<"Age:"<<age<<endl<<"Weight:"<<weight<<endl<<"Height:"<<height;
+    fo.close();
+    u.options(temp,2);
+}
+
+void user::update_file(string key,string value,string fname)
+{
+    string input;
+    char l[6]="temp1";
+
+    fi.close();
+    fi.open(fname);
+    new_file.open(l,ios::app);
+
+
+    if(fi)
+    {
+        while(!fi.eof()){
+        getline(fi,input);
+        if(input.empty())
+        {
+            continue;
+
+        }
+        if(input.find(key)==string::npos){
+            new_file<<input<<endl;
+        }
+        else{
+            new_file<<key<<":"<<value<<endl;
+        }
+        }
+        fi.close();
+        new_file.close();
+
+        char l1[fname.length()+1];
+        strcpy(l1,fname.c_str());
+
+        remove(l1);
+
+        rename(l,l1);
+    }
+}
+void user::edit(string usm)
+{
+    user u;
+     string temp=usm;
+
+int ch;
+    cout<<"What would you like to edit in the profile";
+    cout<<"\n1.Email\n2.Phone number\n3.Physical status\n4.Membership";
+    cin>>ch;
+
+switch(ch){
+case 1:
+    {
+        string em;
+
+        cout<<"\nEnter your new mail that you would like replace the existing one with";
+        cin>>em;
+        int m=validmail(em);
+        if(m==1)
+        u.update_file("Email",em,temp);
+        else
+            cout<<"invalid email format";
+
+        }
+        break;
+
+case 2:
+    {
+        string phno;
+            cout<<"\nEnter your new Phone number that you would like replace the existing one with";
+        cin>>phno;
+        u.update_file("number",phno,temp);
+        break;
+    }
+case 3:
+    {
+    string age,w,h;
+    cout<<"Editing all the Physical status...\nEnter your updated information";
+    cout<<"\nAge:";
+    cin>>age;
+    u.update_file("Age",age,temp);
+    cout<<"\nWeight:";
+    cin>>w;
+    u.update_file("Weight",w,temp);
+    cout<<"\nHeight:";
+    cin>>h;
+    u.update_file("Height",h,temp);
+    break;
+    }
+case 4:
+    {
+      cout<<"The user do not access to edit the membership details";
+    }
+    break;
+default:
+    cout<<"Please choose a valid option...";
+}
+}
+
+int user::quit(string usm)
+{
+int n;
+fi.close();
+char temp[usm.length()+1];
+strcpy(temp,usm.c_str());
+n=remove(temp);
+return n;
+
+}
+
+void user::options(string fname,int n)
+{
+user u;
+int ch,mem;
+if(n==1)
+{
+cout<<"You have succesfully logged into the USER Portal of SRM GYM MANAGEMENT SYSTEM";
+cout<<"\n1.Display Profile\n2.EDIT your profile\n3.CHANGE your membership\n4.QUIT THE GYM\n5.EXIT TO MAIN MENU";
+cin>>ch;
+switch(ch)
+{
+case 1:
+            u.display(fname);
+            break;
+
+case 2:
+            u.edit(fname);
+            break;
+
+case 3:
+            cout<<"\nThis feature is blocked for users,You can send request to admin...";
+            cout<<"\nEnter your choice:";
+            cin>>mem;
+            // #############################
+            break;
+
+case 4:    {
+            int ni=u.quit(fname);
+            if(ni==0)
+                cout<<"You have succesfully quit the gym\n\tYour details and records are wiped\nTHANKYOU";
+            else
+                cout<<"The Process of quitting gym is unsuccessful";
+            break;
+           }
+case 5:
+            cout<<"Exiting to main menu...";
+            break;
+default:
+            cout<<"Enter a valid choice"<<endl;
+            break;
+
+}
+}
+else if(n==2)
+{
+admin a;
+string usr,psr;
+  cout<<"You have successfully Registered into the SRM GYM MANAGEMENT SYSTEM";
+  cout<<"\n1.JOIN\n2.Take a Membership";
+  cin>>ch;
+  if(ch==1){
+    cout<<"This option involves no allocation of Personal Trainer\n This is recomended for veterans";
+    fo.open(fname,ios::app);
+    fo<<"\nMembership:No membership";
+    fo.close();
+  }
+  else if(ch==2){
+    cout<<"\nThis feature is locked by admin!!!\n Only The Admin have priviliges for creating a membership...\n The details about the memberships are as follows...";
+    cout<<"\n1.Silver-2hrs a day,Pt,limited access to gym equipment,No flexibility\n2.Gold-4hrs a day,PT,full access to gym equipment,Flexibility in timing\n3.Platinum-unlimited acces,PT,full acces,flexibility of timig and the trainers";
+    while(1){
+    cout<<"\nEnter the username of Admin:";
+    cin>>usr;
+    cout<<"\nEnter the Password for Admin login:";
+    cin>>psr;
+    if(usr==defusn&&psr==defpsd){
+        a.options();
+    }
+    else{
+        cout<<"The login credentials you have entered are incorrect!!!\n Please check and try again";
+    }
+  }
+  }
+}
+}
+
+class trainer
+{
+public:
+void getdetails(string,string,string);
+void options(string);
+void users();
+void trainers();
+
+};
+void trainer::users(){
+string input;
+fi.close();
+fi.open("ALLUSERS");
+while(!fi.eof()){
+    getline(fi,input);
+    no_of_membership_users++;
+}
+fi.close();
+}
+void trainer::trainers(){
+string input;
+fi.close();
+fi.open("TRAINERS");
+while(!fi.eof()){
+    getline(fi,input);
+    no_of_trainers++;
+}
+fi.close();
+}
+void trainer::options(string usm)
+{
+    int ch;
+    string input,temp=usm+"TRAINER.txt";
+
+cout<<"\nWelcome to TRAINER Portal of SRM GYM MANAGEMENT SYSTEM";
+cout<<"\n1.SCHEDULE\n2.Display profile";
+cout<<"\nEnter your choice:";
+cin>>ch;
+if(ch==1){
+cout<<"\nThe no. of users under your guidance are"<<(no_of_membership_users/no_of_trainers);
+}
+else if(ch==2){
+  fi.close();
+fi.open(temp);
+while(!fi.eof()){
+    getline(fi,input);
+    cout<<endl<<input;
+}
+fi.close();
+}
+}
+void trainer::getdetails(string usm,string psm,string name)
+{
+trainer t;
+string email,phn_no,temp=usm+"TRAINER.txt";
+float height,weight;
+int age;
+
+    while(1){
+    cout<<"Enter your email:";
+    cin>>email;
+    cout<<"Enter your phone number:";
+    cin>>phn_no;
+    int n=validmail(email);
+    if(n==1 && phn_no.length()==10){
+        break;
+    }
+    else{
+        cout<<"The email you have entered is invalid\n Please enter your email and Phone number again...";
+    }
+    }
+    cout<<"Physical Status:\nEnter your Age:";
+    cin>>age;
+    cout<<"Enter your Weight:";
+    cin>>weight;
+    cout<<"Enter your Height:";
+    cin>>height;
+    fo.open(temp);
+    fo<<usm<<endl<<psm<<endl<<"Name:"<<name<<endl;
+    fo<<"Details:"<<endl;
+    fo<<"Email:"<<email<<endl<<"Phone number:"<<phn_no<<endl;
+    fo<<"Physical status:\n"<<"Age:"<<age<<endl<<"Weight:"<<weight<<endl<<"Height:"<<height;
+    fo.close();
+    t.options(usm);
+}
+//#######LOGIN
+class login
+{
+    public:
+int n;
+void log(int );
+void log(string);
+};
+//#####REGISTRATION
+void login::log(string spec)
+{
+string usm,psm,name;
+user u;
+login l;
+trainer t;
+            cout<<"\n Please enter your Name:";
+            cin.ignore();
+            getline(cin,name);
+                cout<<"\nCreate a username:";
+                cin>>usm;
+            string temp=usm+spec+".txt";
+            fi.open(temp.c_str());
+            if(!fi.is_open() && fi.fail()){
+                cout<<"The username you have picked is valid...:";
+                cout<<"create a password";
+                cin>>psm;
+                fi.close();
+            if(spec=="USER")
+                {
+                fo.close();
+                fo.open("ALLUSERS",ios::app);
+                fo<<usm<<"\tName:"<<name<<endl;
+                fo.close();
+                u.getdetails(usm,psm,name);
+            }
+            else if(spec=="TRAINER")
+            {
+               fo.close();
+                fo.open("TRAINERS",ios::app);
+                fo<<usm<<"\tName:"<<name<<endl;
+                fo.close();
+                t.getdetails(usm,psm,name);
+            }
+            }
+
+else{
+    cout<<"\nThe username you have picked is Invalid\nTry again with a different username";
+    l.log(spec);
+}
+}
+//####LOGIN
+void login::log(int n)
+{
+string usm,psm,usm1,psm1,temp,spec;
+login l;
+user u;
+if(n==2){
+spec="USER";
+}
+else if(n==3){
+    spec="TRAINER";
+}
+    cout<<"\nLOGIN SYSTEM FOR "<<spec;
+    cout<<"\n Please enter your Username:";
+    cin>>usm;
+    cout<<"\nEnter your password:";
+    cin>>psm;
+    temp=usm+spec+".txt";
+    fi.open(temp.c_str());
+    if(!fi.is_open() && fi.fail()){
+        cout<<"You are not registered, \n Please register before logging in.\nRedirecting to register portal...";
+        fi.close();
+        l.log(spec);
+    }
+
+    else{
+            fi.close();
+            fi.open(temp);
+        getline(fi,usm1);
+        getline(fi,psm1);
+        if(usm==usm1 && psm==psm1){
+            cout<<"You've succesfully logged in";
+            fo.close();
+            u.options(temp,1);
+        }
+        else{
+            cout<<"Either your Username or your Password are incorrect...";
+            l.log(n);
+        }
+    }
+}
+
+//#######################################MAIN
+
+int main()
+{
+int choice,cha;
+admin a;
+login l;
+string defpsd1,defusn1;
+cout<<"WELCOME TO SRM GYM MANAGEMENT SYSYTEM\n please choose an option\n";
+do{
+cout<<"\tWho's using the system:";
+cout<<"\n1.Gym Manager\n2.USER\n3.Trainer\n4.Exit";
+cout<<"\nPlease enter your choice:";
+cin>>choice;
+switch(choice){
+case 1:
+            {
+            cout<<"Enter your Admin Username:";
+            cin>>defusn1;
+            cout<<"Enter your Password:";
+            cin>>defpsd1;
+            if(defusn1==defusn && defpsd1==defpsd1){
+                a.options();
+            }
+            else{
+                cout<<"The credentials you have entered are Invalid!!!Please check and try again:";
+            }
+            }
+
+            break;
+case 2:
+            cout<<"\n1.LOGIN\n2.REGISTER";
+            cout<<"\nPlease enter your choice:";
+
+            cin>>cha;
+            if(cha==1){
+            l.log(2);
+            }
+            else if(cha==2){
+                    l.log("USER");
+            }
+            break;
+case 3:
+            l.log(3);
+            break;
+case 4:
+            cout<<"\nExiting...\nTHANK YOU";
+            break;
+default:
+            cout<<"\nPlease choose a valid option:";
+
+}
+}while(choice!=4);
+}
